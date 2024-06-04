@@ -1,90 +1,75 @@
 import streamlit as st
-import time
 
 data = [
-    {'Nama':'Es Cekek', 'Harga': 3000, 'Jenis':'Minuman', 'Tetangga1': 'Roti Bakar', 'Tetangga2': 'Cireng'},
-    {'Nama':'Cireng', 'Harga': 5000, 'Jenis':'Makanan', 'Tetangga1': 'Es Cekek', 'Tetangga2': 'Kentang'},
-    {'Nama':'Es Teh', 'Harga': 5000, 'Jenis':'Minuman', 'Tetangga1': 'Dimsum', 'Tetangga2': 'Batagor'},
-    {'Nama':'Roti Bakar', 'Harga': 6000, 'Jenis':'Makanan', 'Tetangga1': 'Dimsum', 'Tetangga2': 'Es Cekek'},
-    {'Nama':'Kentang', 'Harga': 8000, 'Jenis':'Makanan', 'Tetangga1': 'Es Cekek', 'Tetangga2': 'Cireng'},
-    {'Nama':'Batagor', 'Harga': 10000, 'Jenis':'Makanan', 'Tetangga1': 'Es Teh', 'Tetangga2': 'Es Cekek'},
-    {'Nama':'Dimsum', 'Harga': 12000, 'Jenis':'Makanan', 'Tetangga1': 'Es Teh', 'Tetangga2': 'Roti Bakar'},
+    {'Nama':'es cekek', 'Harga': 3000, 'Jenis':'Minuman', 'Tetangga1': 'roti bakar', 'Tetangga2': 'cireng'},
+    {'Nama':'cireng', 'Harga': 5000, 'Jenis':'Makanan', 'Tetangga1': 'es cekek', 'Tetangga2': 'kentang'},
+    {'Nama':'es teh', 'Harga': 5000, 'Jenis':'Minuman', 'Tetangga1': 'dimsum', 'Tetangga2': 'batagor'},
+    {'Nama':'roti bakar', 'Harga': 6000, 'Jenis':'Makanan', 'Tetangga1': 'dimsum', 'Tetangga2': 'es cekek'},
+    {'Nama':'kentang', 'Harga': 8000, 'Jenis':'Makanan', 'Tetangga1': 'es cekek', 'Tetangga2': 'cireng'},
+    {'Nama':'batagor', 'Harga': 10000, 'Jenis':'Makanan', 'Tetangga1': 'es teh', 'Tetangga2': 'es cekek'},
+    {'Nama':'dimsum', 'Harga': 12000, 'Jenis':'Makanan', 'Tetangga1': 'es teh', 'Tetangga2': 'roti bakar'},
 ]
-
-data2 = data
-
-def knapsack_greedy(data, w, n):
-    start_time = time.process_time()
-    total_harga = 0
-    item = find_item(data, n)
-
-    x = []
-    x.append(item)
-    total_harga += item['Harga']          
-    while total_harga <= w: 
-        data.remove(item)
-        t1 = find_item(data, item['Tetangga1'])
-        t2 = find_item(data, item['Tetangga2'])
-        if t1 != None and t2 != None:
-            if t1['Harga'] < t2['Harga']:
-                item = t1
-            else:
-                item = t2
-        elif t1 != None:
-            item = t1
-        else:
-            item = t2
-
-        x.append(item)
-        total_harga += item['Harga']          
-    
-    end_time = time.process_time()
-    return x, total_harga, end_time-start_time
 
 def find_item(data, cari):
     for j in data:
         if cari == j['Nama']:
             return j
-        return None
+    return None
+
+def knapsack_greedy(data, w, n):
+    total_harga = 0
+    minuman = 0
+    x = []
+
+    found = find_item(data, n)
+    if not found:
+        return x, total_harga
+
+    x.append(found)
+    total_harga += found['Harga']
+
+    while total_harga <= w:  
+        item = found
+        data.remove(found)
+        t1 = find_item(data, item['Tetangga1'])
+        t2 = find_item(data, item['Tetangga2'])
+        if t1 and t2:
+            if t1['Harga'] < t2['Harga']:
+                found = t1
+            else:
+                found = t2
+        elif t1:
+            found = t1
+        elif t2:
+            found = t2
+        else:
+            break
+
+        if found['Jenis'] == 'Minuman':
+            minuman+=1
+        
+        if minuman >= 1 and found['Jenis'] == 'Minuman':
+            continue
+
+        if total_harga + found['Harga'] > w:
+            # total_harga -= x[-1]['Harga']
+            # del x[-1]
+            continue
+
+        x.append(found)
+        total_harga += found['Harga']
+        
+    return x, total_harga
+
 
 st.title("Mencari Takjil Greedy vs Brute Force")
 
-st.dataframe(data)
+edited_df = st.data_editor(data, num_rows="dynamic")
+
 w = st.number_input("Tentukan Batas Harga!", placeholder="nilai awal ialah 25000", value=25000)
-nama_options = [item['Nama'] for item in data]
+nama_options = [item['Nama'] for item in edited_df]
 n = st.selectbox("Tentukan 1 Item Yang Wajib Dibeli!", nama_options)
 
-hasil, total, waktu = knapsack_greedy(data2, w, n)
-st.dataframe(hasil)
-st.write(total)
-st.write(waktu)
-
-
-# def knapsack_greedy(data, w, first):
-#     start_time = time.process_time()
-#     x = []
-#     minuman = 0
-#     total_harga = 0
-#     item = find_item(data, first)
-
-#     x.append(item)
-#     total_harga += item['Harga']
-#     while total_harga <= w:
-#         t1 = find_item(data, item['Tetangga1'])
-#         t2 = find_item(data, item['Tetangga2'])
-#         x1 = find_item(x, item['Nama'])
-#         x2 = find_item(x, item['Nama'])
-#         if x1 == None and x2 == None:
-#             if t1['Harga'] < t2['Harga']:
-#                 item = t1
-#             else:
-#                 item = t2
-#         elif x1 == None and x2 != None:
-#             item = t1
-#         elif x2 == None and x1 != None:
-#             item = t1
-#         else:
-#             break
-#         x.append(item)
-#         total_harga += item['Harga']          
-#     return x
+hasil, total = knapsack_greedy(edited_df, w, n)
+st.write('ini hasil :', hasil)
+st.write('total harga :', total)
