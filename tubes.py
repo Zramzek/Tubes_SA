@@ -1,4 +1,5 @@
 import streamlit as st
+import time
 
 data = [
     {'Nama':'es cekek', 'Harga': 3000, 'Jenis':'Minuman', 'Tetangga1': 'roti bakar', 'Tetangga2': 'cireng'},
@@ -52,8 +53,6 @@ def knapsack_greedy(data, w, n):
             continue
 
         if total_harga + found['Harga'] > w:
-            # total_harga -= x[-1]['Harga']
-            # del x[-1]
             continue
 
         x.append(found)
@@ -63,13 +62,28 @@ def knapsack_greedy(data, w, n):
 
 
 st.title("Mencari Takjil Greedy vs Brute Force")
-
 edited_df = st.data_editor(data, num_rows="dynamic")
 
 w = st.number_input("Tentukan Batas Harga!", placeholder="nilai awal ialah 25000", value=25000)
 nama_options = [item['Nama'] for item in edited_df]
 n = st.selectbox("Tentukan 1 Item Yang Wajib Dibeli!", nama_options)
 
-hasil, total = knapsack_greedy(edited_df, w, n)
-st.write('ini hasil :', hasil)
-st.write('total harga :', total)
+col1, col2 = st.columns(2)
+
+greedy = col1.button("Greedy")
+dp = col2.button("Dynamic Programming")
+
+
+if greedy:
+    with st.spinner('Menghitung Data'):
+        time.sleep(3)
+    hasil, total = knapsack_greedy(edited_df, w, n)
+    col1.write('Hasil Algoritma Greedy')
+    col1.dataframe(hasil)
+    col1.write('total harga :')
+    col1.write(total)
+
+if dp:
+    with st.spinner('Menghitung Data'):
+        time.sleep(3)
+    col2.write('Hasil Algoritma Dynamic Programming')
