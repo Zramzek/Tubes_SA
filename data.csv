@@ -1,8 +1,0 @@
-Nama,Harga,Jenis,Tetangga1,Tetangga2
-Es cekek,3000,Minuman,Roti Bakar,Cireng
-Cireng,5000,Makanan,Es Cekek,Kentang
-Es Teh,5000,Minuman,Dimsum,Batagor
-Roti Bakar,6000,Makanan,Dimsum,Es Cekek
-Kentang,8000,Makanan,Es Coklat,Cireng
-Batagor,10000,Makanan,Es Teh,Es Coklat
-Dimsum,12000,Makanan,Es Teh,Roti Bakar
